@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: DNS entry pointig to K8s internal NLB so Taxonomies Skills Lookup Service can be exposed via API GW
+Parameters:
+  EnvironmentName: {Default: EnvironmentName,       Type: "AWS::SSM::Parameter::Value<String>"}
+  NlbDomainName:   {Default: eks-master-internalLB, Type: "AWS::SSM::Parameter::Value<String>"}
+Resources:
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Type: A
+      Name: !Sub taxonomies-skills-lookup-service.${EnvironmentName}.monster-next.com.
+      HostedZoneName: !Sub '${EnvironmentName}.monster-next.com.'
+      AliasTarget:
+        DNSName: !Sub dualstack.${NlbDomainName}.
+        HostedZoneId: Z26RNL4JYFTOTI # HostedZoneId for NLBs in us-east-1
